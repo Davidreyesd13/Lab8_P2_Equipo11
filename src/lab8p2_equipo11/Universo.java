@@ -1,8 +1,9 @@
 package lab8p2_equipo11;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Universo {
+public class Universo implements Serializable{
     private String nombre;
     private int CantSeres;
     private ArrayList <SerVivo> Svs;
@@ -10,6 +11,10 @@ public class Universo {
     public Universo() {
     }
 
+    public Universo(String nombre) {
+        this.nombre = nombre;
+    }
+    
     public Universo(String nombre, int CantSeres, ArrayList<SerVivo> Svs) {
         this.nombre = nombre;
         this.CantSeres = CantSeres;
@@ -47,7 +52,7 @@ public class Universo {
 
     @Override
     public String toString() {
-        return "Universo{" + "nombre=" + nombre + ", CantSeres=" + CantSeres + '}';
+        return "Universo{" + "nombre=" + nombre + ", CantSeres=" + CantSeres + Svs;
     }
     
 }

@@ -3,7 +3,7 @@ package lab8p2_equipo11;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class SerVivo extends Universo implements Serializable{
+public class SerVivo {
     private String nombres;
     private int ID;
     private int Poder;
@@ -14,8 +14,8 @@ public class SerVivo extends Universo implements Serializable{
     public SerVivo() {
     }
 
-    public SerVivo(String nombres, int ID, int Poder, int Anios, Universo UniversoDprocedencia, String Raza, String nombre, ArrayList<SerVivo> Svs) {
-        super(nombre, Svs);
+    public SerVivo(String nombres, int ID, int Poder, int Anios, Universo UniversoDprocedencia, String Raza) {
+        
         this.nombres = nombres;
         this.ID = ID;
         this.Poder = Poder;
@@ -23,7 +23,6 @@ public class SerVivo extends Universo implements Serializable{
         this.UniversoDprocedencia = UniversoDprocedencia;
         this.Raza = Raza;
     }
-
     
 
     public String getNombre() {
@@ -76,7 +75,7 @@ public class SerVivo extends Universo implements Serializable{
 
     @Override
     public String toString() {
-        return "SerVivo{" + "nombre=" + nombres + ", ID=" + ID + ", UniversoDprocedencia=" + UniversoDprocedencia + '}';
+        return "SerVivo{" + "nombre=" + nombres + ", ID=" + ID + ", UniversoDprocedencia=" + UniversoDprocedencia.getNombre() + "Raza"+Raza;
     }
     
     

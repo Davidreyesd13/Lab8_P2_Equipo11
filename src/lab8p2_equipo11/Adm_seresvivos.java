@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class Adm_seresvivos {
 File f;
-ArrayList<SerVivo> list_vivo;
+ArrayList<Universo> list_vivo;
 public Adm_seresvivos(String path){
     f = new File(path);
 }
@@ -22,25 +22,25 @@ public Adm_seresvivos(String path){
         this.f = f;
     }
 
-    public ArrayList<SerVivo> getList_vivo() {
+    public ArrayList<Universo> getList_vivo() {
         return list_vivo;
     }
 
-    public void setList_vivo(ArrayList<SerVivo> list_vivo) {
+    public void setList_vivo(ArrayList<Universo> list_vivo) {
         this.list_vivo = list_vivo;
     }
 
     public void cargarArchivo() {
         try {
             list_vivo = new ArrayList();
-            SerVivo temp;
+            Universo temp;
             if (f.exists()) {
                 FileInputStream entrada
                         = new FileInputStream(f);
                 ObjectInputStream objeto
                         = new ObjectInputStream(entrada);
                 try {
-                    while ((temp = (SerVivo) objeto.readObject()) != null) {
+                    while ((temp = (Universo) objeto.readObject()) != null) {
                         list_vivo.add(temp);
                     }
                 } catch (EOFException e) {
@@ -60,7 +60,7 @@ public Adm_seresvivos(String path){
         try {
             fw = new FileOutputStream(f);
             bw = new ObjectOutputStream(fw);
-            for (SerVivo t : list_vivo) {
+            for (Universo t : list_vivo) {
                 bw.writeObject(t);
             }
             bw.flush();

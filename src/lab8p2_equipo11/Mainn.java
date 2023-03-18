@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -18,14 +21,13 @@ public class Mainn extends javax.swing.JFrame {
     /**
      * Creates new form Mainn
      */
-    
-
     public Mainn() {
         initComponents();
         this.setLocationRelativeTo(null);
         Adm_seresvivos ads = new Adm_seresvivos("./seresvivos.lab");
         ads.cargarArchivo();
-        
+        uni = ads.getList_vivo();
+
     }
 
     /**
@@ -50,11 +52,11 @@ public class Mainn extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jDialogCargar = new javax.swing.JDialog();
         jPanel3 = new javax.swing.JPanel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        jcb_universocarga = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList<>();
         jButton1 = new javax.swing.JButton();
-        jProgressBar1 = new javax.swing.JProgressBar();
+        jpb_carga = new javax.swing.JProgressBar();
         jmi_menu = new javax.swing.JButton();
         jPopupMenu_crud = new javax.swing.JPopupMenu();
         jmi_modificar = new javax.swing.JMenuItem();
@@ -96,6 +98,10 @@ public class Mainn extends javax.swing.JFrame {
         jCB_razaSV.setFont(new java.awt.Font("Segoe UI Semibold", 0, 18)); // NOI18N
         jCB_razaSV.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Humano", "Amanto" }));
         jCB_razaSV.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Raza", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 0, 14))); // NOI18N
+
+        jSpinner_poderSV.setModel(new javax.swing.SpinnerNumberModel(1, 1, 10, 1));
+
+        jSpinner_anioSV.setModel(new javax.swing.SpinnerNumberModel(1, 1, 100, 1));
 
         btn_addSV.setBackground(new java.awt.Color(51, 51, 51));
         btn_addSV.setFont(new java.awt.Font("Segoe UI Semibold", 3, 18)); // NOI18N
@@ -189,17 +195,17 @@ public class Mainn extends javax.swing.JFrame {
 
         jButton1.setText("Cargar");
         jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
 
         jmi_menu.setText("Menu");
         jmi_menu.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jmi_menu.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jmi_menuMouseClicked(evt);
-            }
-        });
-        jmi_menu.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmi_menuActionPerformed(evt);
             }
         });
 
@@ -210,10 +216,10 @@ public class Mainn extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(85, 85, 85)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jpb_carga, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jcb_universocarga, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(79, 79, 79)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 335, Short.MAX_VALUE)
@@ -225,13 +231,13 @@ public class Mainn extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(59, 59, 59)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jComboBox1)
+                    .addComponent(jcb_universocarga)
                     .addComponent(jmi_menu, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(66, 66, 66)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(37, 37, 37)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jpb_carga, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(60, Short.MAX_VALUE))
         );
 
@@ -474,20 +480,24 @@ public class Mainn extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_addSVMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_addSVMouseClicked
-
+        int fin = jCB_razaSV.getSelectedIndex();
+        int uniit = jCB_universoSV.getSelectedIndex();
+        String unif = jCB_universoSV.getItemAt(uniit);
+        String f = jCB_razaSV.getItemAt(fin);
+        uni.get(jCB_universoSV.getSelectedIndex()).getSvs().add(new SerVivo(jTFnombreSV.getText(), uni.get(jCB_universoSV.getSelectedIndex()).getSvs().size() + 2, (int) jSpinner_poderSV.getValue(), (int) jSpinner_anioSV.getValue(), new Universo(unif), f));
+        uni.get(jCB_universoSV.getSelectedIndex()).setCantSeres(uni.get(jCB_universoSV.getSelectedIndex()).getSvs().size() + 1);
+        Adm_seresvivos ads = new Adm_seresvivos("./seresvivos.lab");
+        ads.setList_vivo(uni);
+        ads.escribirArchivo();
+        JOptionPane.showMessageDialog(null, "Creado con exito");
     }//GEN-LAST:event_btn_addSVMouseClicked
 
     private void btn_menuSVMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_menuSVMouseClicked
         // TODO add your handling code here:
+
         jDialogServivo.setVisible(false);
         this.setVisible(true);
     }//GEN-LAST:event_btn_menuSVMouseClicked
-
-    private void jmi_menuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmi_menuActionPerformed
-        // TODO add your handling code here:
-        jDialogServivoMod.setVisible(true);
-        jDialogCargar.setVisible(false);
-    }//GEN-LAST:event_jmi_menuActionPerformed
 
     private void btn_modSVMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btn_modSVMouseClicked
         // TODO add your handling code here:
@@ -497,17 +507,19 @@ public class Mainn extends javax.swing.JFrame {
         // TODO add your handling code here:
         String nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre");
         if (nombre == null || nombre.isEmpty()) {
-                nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre");
+            nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre");
         } else {
             uni.add(new Universo(nombre, new ArrayList()));
             JOptionPane.showMessageDialog(null, "Creado con exito");
-        }
 
+            jCB_universoSV.addItem(uni.get(uni.size() - 1).getNombre());
+        }
     }//GEN-LAST:event_jBtn_universoMouseClicked
 
     private void jBtn_servivo1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtn_servivo1MouseClicked
         // TODO add your handling code here:
         if (!uni.isEmpty()) {
+
             jDialogServivo.pack();
             jDialogServivo.setLocationRelativeTo(this);
             jDialogServivo.setVisible(true);
@@ -541,7 +553,7 @@ public class Mainn extends javax.swing.JFrame {
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
         // TODO add your handling code here:
-        actualizarclases(jl_univ);
+        actualizarlistas(jl_univ);
     }//GEN-LAST:event_jButton2MouseClicked
 
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
@@ -554,32 +566,43 @@ public class Mainn extends javax.swing.JFrame {
     private void jmiu_modificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiu_modificarActionPerformed
         // TODO add your handling code here:
         uni.get(jl_univ.getSelectedIndex()).setNombre(JOptionPane.showInputDialog("Agrege el nuevo nombre"));
-        actualizarclases(jl_univ);
+        actualizarlistas(jl_univ);
     }//GEN-LAST:event_jmiu_modificarActionPerformed
 
     private void jmiu_eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiu_eliminarActionPerformed
         // TODO add your handling code here:
         uni.remove(jl_univ.getSelectedIndex());
-        actualizarclases(jl_univ);
+        actualizarlistas(jl_univ);
     }//GEN-LAST:event_jmiu_eliminarActionPerformed
 
     private void jBtn_cargarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jBtn_cargarMouseClicked
         // TODO add your handling code here:
-        if (!uni.isEmpty()) {
-            jDialogCargar.pack();
-            jDialogCargar.setLocationRelativeTo(this);
-            jDialogCargar.setVisible(true);
-            this.setVisible(false);
-        } else {
-            JOptionPane.showMessageDialog(this, "No hay universos creados");
-        }
+
+        jDialogCargar.pack();
+        jDialogCargar.setLocationRelativeTo(this);
+        jDialogCargar.setVisible(true);
+        this.setVisible(false);
+
     }//GEN-LAST:event_jBtn_cargarMouseClicked
 
     private void jmi_menuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jmi_menuMouseClicked
         // TODO add your handling code here:
         jDialogCargar.setVisible(false);
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
     }//GEN-LAST:event_jmi_menuMouseClicked
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // TODO add your handling code here:
+        for (int i = 0; i < uni.get(jcb_universocarga.getSelectedIndex()).getSvs().size(); i++) {
+            jpb_carga.setValue(i);
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ex) {
+                // Manejar excepción
+            }
+        }
+    }//GEN-LAST:event_jButton1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -631,7 +654,6 @@ public class Mainn extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jCB_razaSV1;
     private javax.swing.JComboBox<String> jCB_universoSV;
     private javax.swing.JComboBox<String> jCB_universoSV1;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JDialog jDialogCargar;
     private javax.swing.JDialog jDialogServivo;
     private javax.swing.JDialog jDialogServivoMod;
@@ -646,7 +668,6 @@ public class Mainn extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPopupMenu jPopupMenu_crud;
-    private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator2;
@@ -656,6 +677,7 @@ public class Mainn extends javax.swing.JFrame {
     private javax.swing.JSpinner jSpinner_poderSV1;
     private javax.swing.JTextField jTFnombreSV;
     private javax.swing.JTextField jTFnombreSV1;
+    private javax.swing.JComboBox<String> jcb_universocarga;
     private javax.swing.JDialog jd_edituni;
     private javax.swing.JList<String> jl_univ;
     private javax.swing.JMenuItem jmi_eliminar;
@@ -664,10 +686,11 @@ public class Mainn extends javax.swing.JFrame {
     private javax.swing.JMenuItem jmiu_eliminar;
     private javax.swing.JMenuItem jmiu_modificar;
     private javax.swing.JPopupMenu jp_edituni;
+    private javax.swing.JProgressBar jpb_carga;
     // End of variables declaration//GEN-END:variables
 static ArrayList<Universo> uni = new ArrayList();
 
-    static void actualizarclases(JList jl_todos) {
+    static void actualizarlistas(JList jl_todos) {
         jl_todos.setModel(new DefaultListModel());
         DefaultListModel modelo = (DefaultListModel) jl_todos.getModel();
         for (int i = 0; i < uni.size(); i++) {
